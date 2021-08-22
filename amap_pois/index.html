@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <link rel="stylesheet" type="text/css" href="static/css/index.css">
+  <link rel="stylesheet" type="text/css" href="static/css/pagination.css">
+  <title>上海电动自行车上牌点(2020-3)</title>
+  <style>
+    @media screen and (min-width: 641px) {
+      #keywords {
+        position: absolute;
+        right: 310px;
+        top: 7px;
+        line-height: 200%;
+        padding: 0 5px;
+        font-size: 13;
+        border-radius: 3px;
+        border: 1px solid #ccc;
+        width: 200px;
+        height: 30px;
+      }
+    }
+    @media screen and (max-width: 640px) {
+      #panel {
+        position: absolute;
+        top: unset;
+        width: 100%;
+        height: 300px;
+        z-index: 999;
+        border-top: 1px solid #eaeaea;
+        background: #fff;
+      }
+      #outer-box {
+        position:relative;  
+        width:100%;
+        min-height:100%; 
+        padding-bottom: 300px;
+        padding-right: unset;
+        box-sizing: border-box;
+      }
+      #keywords {
+        position: absolute;
+        top: 7px;
+        left: unset;
+        right: 20px;
+        line-height: 200%;
+        padding: 0 5px;
+        font-size: 13;
+        border-radius: 3px;
+        border: 1px solid #ccc;
+        width: 60%;
+        height: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="outer-box">
+    <div id="container" tabindex="0"></div>
+    <input type="text" id="keywords" placeholder="输入关键词，如：中山医院" value="" />
+    <div id="panel" class="scrollbar1">
+      <button id="closePanel" style='float:right;margin-right:10px;margin-top:5px'>X</button>
+      <ul id="pagination-demo" class="pagination-sm"></ul>
+      <ul id="myList">
+      </ul>
+    </div>
+  </div>
+  <script type="text/javascript" src="static/js/jquery-1.12.4.min.js"></script>
+  <script type="text/javascript" src="static/js/jquery.twbsPagination.min.js"></script>
+  <script type="text/javascript" src="point.js"></script>
+  <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&plugin=AMap.Autocomplete&key=e8e9e6b236c58be0bf648f923a4da599"></script>
+  <script type="text/javascript" src="static/js/addToolbar.js"></script>
+  <!-- UI组件库 1.0 -->
+  <script src="static/js/main.js"></script>
+  <script type="text/javascript">
+    //创建地图
+    var map = new AMap.Map('container', {
+      zoom: 9,
+      resizeEnable: true,
+      mapStyle: "amap://styles/light"
+    });
+    // 自动联想
+    var auto = new AMap.Autocomplete({
+      input: "keywords"
+    });
+    
+    // 标注点
+    var infoWindow = new AMap.InfoWindow({offset: new AMap.Pixel(0, -30)});
+    for (var i = 0, marker; i < points.length; i++) {
+      var point = points[i]
+      var marker = new AMap.Marker({
+        position: point.lnglat,
+        icon: 'static/img/pin' + point.style + '.png',
+        map: map
+      });
+      marker.content = '<h3>' + point.name + '</h3><hr><p><b>地址：</b>' + point.addr
+        + '</p><p><b>简介：</b>' + point.intro + '</p>';
+      marker.on('click', markerClick);
+      // marker.emit('click', {target: marker});
+    }
+    function markerClick(e) {
+      infoWindow.setContent(e.target.content);
+      infoWindow.open(map, e.target.getPosition());
+    }
+    var closePanel = document.getElementById('closePanel');
+    var panel = document.getElementById('panel');
+    var outerBox = document.getElementById('outer-box');
+    closePanel.onclick = function () {
+      // panel.style.display = 'none';
+      if (document.body.clientWidth <= 640) {
+        panel.style.height = 0;
+        outerBox.style.paddingBottom = 0;
+      } else {
+        panel.style.width = 0;
+        outerBox.style.paddingRight = 0;
+      }
+    }
+    var keywords = document.getElementById('keywords');
+    $("#keywords").bind('keypress', function (evt) {
+      if (evt.keyCode == "13") {
+        // panel.style.display = 'block';
+        if (document.body.clientWidth <= 640) {
+          panel.style.height = "300px";
+          outerBox.style.paddingBottom = "300px";
+        } else {
+          panel.style.width = "300px";
+          outerBox.style.paddingRight = "300px";
+        }
+      }
+    })
+
+    // 加载图层
+    AMapUI.loadUI(['control/BasicControl'], function(BasicControl) {
+      //图层切换控件
+      map.addControl(new BasicControl.LayerSwitcher({
+        position: 'lb'
+      }));
+    });
+
+    AMapUI.loadUI(['misc/MarkerList', 'overlay/SimpleMarker', 'overlay/SimpleInfoWindow'],
+      function(MarkerList, SimpleMarker, SimpleInfoWindow) {
+
+        //即jQuery/Zepto
+        var $ = MarkerList.utils.$;
+
+        var defaultIconStyle = function(index) {
+            return 'red-' + (index + 1);
+          }, //默认的图标样式
+          hoverIconStyle = function(index) {
+            return 'blue-' + (index + 1);
+          }, //鼠标hover时的样式
+          selectedIconStyle = function(index) {
+            return 'blue-' + (index + 1);
+          } //选中时的图标样式
+        ;
+
+        var markerList = new MarkerList({
+          map: map,
+          //ListElement对应的父节点或者ID
+          listContainer: "myList", //document.getElementById("myList"),
+          //选中后显示
+
+          //从数据中读取位置, 返回lngLat
+          getPosition: function(item) {
+            return item.location;
+          },
+          //数据ID，如果不提供，默认使用数组索引，即index
+          getDataId: function(item, index) {
+            return item.id;
+          },
+          getInfoWindow: function(data, context, recycledInfoWindow) {
+            if (recycledInfoWindow) {
+              recycledInfoWindow.setInfoTitle(data.name);
+              recycledInfoWindow.setInfoBody(data.address);
+
+              return recycledInfoWindow;
+            }
+
+            return new SimpleInfoWindow({
+              infoTitle: data.name,
+              infoBody: data.address,
+              offset: new AMap.Pixel(0, -32)
+            });
+          },
+          //构造marker用的options对象, content和title支持模板，也可以是函数，返回marker实例，或者返回options对象
+          getMarker: function(data, context, recycledMarker) {
+
+            if (recycledMarker) {
+              recycledMarker.setIconStyle(defaultIconStyle(context.index));
+              return;
+            }
+
+            return new SimpleMarker({
+              iconTheme: 'numv1',
+              containerClassNames: 'my-marker',
+              iconStyle: defaultIconStyle(context.index),
+            });
+          },
+
+          //构造列表元素，与getMarker类似，可以是函数，返回一个dom元素，或者模板 html string
+          getListElement: function(data, context, recycledListElement) {
+
+            var label = '' + (context.index + 1);
+
+            //使用模板创建
+            var innerHTML = MarkerList.utils.template(
+              '<% if(data.photos && data.photos[0]) { %>' +
+              '<div class="poi-imgbox">' +
+              '  <span class="poi-img" style="background-image:url(<%- data.photos[0].url %>)"></span>' +
+              '</div>' +
+              '<% } %>' +
+              '<div class="poi-info-left">' +
+              '  <h3 class="poi-title">' +
+              '      <%- label %>. <%- data.name %>' +
+              '  </h3>' +
+              '  <div class="poi-info">' +
+              '    <p class="poi-addr">地址：<%- data.address %></p>' +
+              '<% if(data.tel ){ %>' +
+              '    <p class="poi-addr">电话：<%- data.tel %></p>' +
+              '<% } %>' +
+              '  </div>' +
+              '</div>' +
+              '<div class="clear"></div>', {
+                data: data,
+                label: label
+            });
+
+            if (recycledListElement) {
+              recycledListElement.innerHTML = innerHTML;
+              return recycledListElement;
+            }
+
+            return '<li class="poibox">' +
+              innerHTML +
+              '</li>';
+          },
+          //列表节点上监听的事件
+          listElementEvents: ['click', 'mouseenter', 'mouseleave'],
+          //marker上监听的事件
+          markerEvents: ['click', 'mouseover', 'mouseout'],
+          //makeSelectedEvents:false,
+          selectedClassNames: 'selected',
+          autoSetFitView: true
+        });
+
+        window.markerList = markerList;
+
+        AMap.plugin(["AMap.PlaceSearch"], function() {
+
+          var placeSearch = new AMap.PlaceSearch({ //构造地点查询类
+            pageSize: 5,
+            pageIndex: 1,
+            extensions: 'all',
+            city: "021" //城市
+          });
+
+          var $pagination = $('#pagination-demo');
+
+          function initPagination(page, totalPages) {
+
+            //初始化分页器
+            $pagination.twbsPagination({
+              totalPages: totalPages,
+              startPage: page,
+              prev: null,
+              first: '首页',
+              next: '下一页',
+              last: null,
+              initiateStartPageClick: false,
+              onPageClick: function(event, page) {
+                  goPage(page);
+              }
+            });
+          }
+
+          var inited = false;
+
+          var $keywords = $('#keywords');
+
+          function goPage(page) {
+
+            //设置当前页
+            placeSearch.setPageIndex(page);
+            //关键字查询
+            placeSearch.search($keywords.val(), function(status, result) {
+
+              if (status !== 'complete') {
+                alert('返回数据出错!');
+              }
+
+              //render当前页的数据
+              markerList.render(result.poiList.pois);
+
+              if (!inited) {
+                inited = true;
+                //首次初始化
+                initPagination(page, Math.ceil(result.poiList.count / result.poiList.pageSize));
+              }
+
+            });
+          }
+
+          goPage(1);
+
+          $keywords.on('keypress', function(e) {
+            if (e.which === 13) {
+              inited = false;
+              $pagination.twbsPagination('destroy');
+              goPage(1);
+            }
+          });
+        });
+
+        markerList.on('selectedChanged', function(event, info) {
+
+          if (info.selected) {
+
+            if (info.selected.marker) {
+              //更新为选中样式
+              info.selected.marker.setIconStyle(selectedIconStyle(info.selected.index));
+            }
+          }
+
+          if (info.unSelected && info.unSelected.marker) {
+            //更新为默认样式
+            info.unSelected.marker.setIconStyle(defaultIconStyle(info.unSelected.index));
+          }
+        });
+
+
+        markerList.on('listElementMouseenter markerMouseover', function(event, record) {
+
+          if (record && record.marker) {
+            //非选中的id
+            if (!this.isSelectedDataId(record.id)) {
+              //设置为hover样式
+              record.marker.setIconStyle(hoverIconStyle(record.index));
+              //this.closeInfoWindow();
+            }
+          }
+        });
+
+        markerList.on('listElementMouseleave markerMouseout', function(event, record) {
+
+          if (record && record.marker) {
+
+            if (!this.isSelectedDataId(record.id)) {
+              //恢复默认样式
+              record.marker.setIconStyle(defaultIconStyle(record.index));
+            }
+          }
+        });
+
+    });
+  </script>
+</body>
+
+</html>
