@@ -163,13 +163,13 @@
                 loadScript("src/adcodes.js", ()=>{})
             }
         };
-        window.addEventListener('onload', () => {
+        window.addEventListener('load', (evt) => {
+            evt.preventDefault();
+            chartMainMap.resize();
             chartMainMap.showLoading('default', {text: '数据加载中...', fontSize: 14});
+            chartChangeBar.resize();
             chartChangeBar.showLoading('default', {text: '数据加载中...', fontSize: 14});
-            initChartOnLoad().then(() => {
-                chartMainMap.hideLoading();
-                chartChangeBar.hideLoading()
-            });
+            initChartOnLoad();
         })
         //切换tab
         let triggerTabProv = document.querySelector('#navTab a[href="#provTab"]');

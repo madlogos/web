@@ -266,7 +266,7 @@
                     orient: 'vertical',
                     data: ['东北', '华北', '华东', '华中', '华南', '西南', '西北'],
                     textStyle: {
-                        fontSize: fitSize(16, 9)
+                        fontSize: fitSize(16, 8)
                     }
                 },
                 yAxis: {
