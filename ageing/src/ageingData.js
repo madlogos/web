@@ -537,6 +537,7 @@ var ageingData = {
 	"西藏自治区": [
 		{"name": "拉萨市", "value": 8.5},
 		{"name": "日喀则市"},
+		{"name": "阿里地区", "value": 6.8},
 		{"name": "昌都市", "value": 8.5},
 		{"name": "林芝市", "value": 7.9},
 		{"name": "山南市", "value": 11.4},
@@ -595,10 +596,22 @@ var ageingData = {
 		{"name": "昌吉回族自治州", "value": 15.6},
 		{"name": "博尔塔拉蒙古自治州", "value": 13.8},
 		{"name": "巴音郭楞蒙古自治州", "value": 11.9},
+		{"name": "伊犁哈萨克自治州", "value": 12.0},
+		{"name": "克孜勒苏柯尔克孜自治州", "value": 8.8},
 		{"name": "阿克苏地区", "value": 9.5},
 		{"name": "喀什地区", "value": 8.5},
 		{"name": "和田地区", "value": 7.3},
 		{"name": "塔城地区", "value": 15.2},
-		{"name": "阿勒泰地区", "value": 11.8}
+		{"name": "阿勒泰地区", "value": 11.8},
+		{"name": "北屯市", "value": 12.8},
+		{"name": "五家渠市", "value": 12.8},
+		{"name": "石河子市", "value": 12.8},
+		{"name": "胡杨河市", "value": 12.8},
+		{"name": "双河市", "value": 12.8},
+		{"name": "阿拉尔市", "value": 12.8},
+		{"name": "图木舒克市", "value": 12.8},
+		{"name": "铁门关市", "value": 12.8},
+		{"name": "可克达拉市", "value": 12.8},
+		{"name": "昆玉市", "value": 12.8}
 	]
 }

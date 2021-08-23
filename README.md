@@ -2,8 +2,10 @@
 
 1. 高德地图标记POIs
 
-地址： <https://madlogos.github.io/web/amap_pois>
+- GitHub： <https://madlogos.github.io/web/amap_pois>
+- 码云：    <https://madlogos.gitee.io/web/amap_pois>
 
 1. 老龄化Echarts可视化
 
-地址： <https://madlogos.github.io/web/ageing>
+- GitHub： <https://madlogos.github.io/web/ageing>
+- 码云：    <https://madlogos.gitee.io/web/ageing>

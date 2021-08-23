@@ -2,7 +2,7 @@
  * @Author: wyy
  * @Date: 2021-08-20 09:39:47
  * @LastEditors: user
- * @LastEditTime: 2021-08-20 17:26:44
+ * @LastEditTime: 2021-08-23 15:08:04
  * @Descripttion: Ageing geo
 -->
 
@@ -14,24 +14,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>中国老龄化地图</title>
     <style>
-        @media screen and (max-width: 640px) {
+        @media screen and (max-width: 480px) {
             .ecDom {
-                min-height: 240px
+                min-height: 480px
             }
         }
-        @media screen and (min-width: 641px) {
+        @media screen and (min-width: 481px) {
             .ecDom {
-                min-height: 300px
+                min-height: 540px
             }
         }
         @media screen and (min-width: 769px) {
             .ecDom {
-                min-height: 360px
-            }
-        }
-        @media screen and (min-width: 961px) {
-            .ecDom {
-                min-height: 400px
+                min-height: 600px
             }
         }
         @media screen and (min-width: 1025px) {
@@ -43,7 +38,17 @@
             .ecDom {
                 min-height: 500px
             }
-        }    
+        }
+        @media screen and (min-width: 1401px) {
+            .ecDom {
+                min-height: 600px
+            }
+        }
+        @media screen and (min-width: 1601px) {
+            .ecDom {
+                min-height: 720px
+            }
+        }
         .ecDom {
             width: 100%;
             height: 100%;
@@ -54,8 +59,8 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.0.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.1.2/echarts.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.1.2/theme/infographic.min.js"></script>
-    <script src="ageingData.js"></script>
-    <script src="chnGeoJson.js"></script>
+    <script src="src/func.js"></script>
+    <script src="src/ageingData.js"></script>
 </head>
 
 <body>
@@ -73,56 +78,56 @@
             <ul id="navTab" class="nav nav-tabs tabs" role="tablist">
                 <li role="presentation" class="nav-item">
                     <a href="#provTab" class="nav-link active" role="tab" aria-controls="provPane" aria-selected="true"
-                        data-bs-target="#provPane" data-bs-toggle="tab">省级地图</a>
+                        data-bs-target="#provPane" data-bs-toggle="tab">省级</a>
                 </li>
                 <li role="presentation" class="nav-item">
                     <a href="#cityTab" class="nav-link" role="tab" aria-controls="cityPane" aria-selected="false"
-                        data-bs-target="#cityPane" data-bs-toggle="tab">市级地图</a>
+                        data-bs-target="#cityPane" data-bs-toggle="tab">市级</a>
                 </li>
                 <li role="presentation" class="nav-item">
                     <a href="#drillTab" class="nav-link" role="tab" aria-controls="drillPane"  aria-selected="false"
-                        data-bs-target="#drillPane" data-bs-toggle="tab">地图下钻</a>
+                        data-bs-target="#drillPane" data-bs-toggle="tab">下钻</a>
                 </li>
                 <li role="presentation" class="nav-item">
                     <a href="#admTab" class="nav-link" role="tab" aria-controls="admPane"  aria-selected="false"
-                        data-bs-target="#admPane" data-bs-toggle="tab">行政区划</a>
+                        data-bs-target="#admPane" data-bs-toggle="tab">区划</a>
                 </li>
             </ul>
             <!-- Tab panes -->
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane active" id="provPane" aria-labelledby="provTab">
                     <div class="row">
-                        <div class="col-md-7 col-xs-12">
+                        <div class="col-lg-7 col-md-12">
                             <div class="ecDom" id="mainMap"></div>
                         </div>
-                        <div class="col-md-5 col-xs-12">
+                        <div class="col-lg-5 col-md-12">
                             <div class="ecDom" id="changeBar"></div>
                         </div>
                     </div>
                 </div>
                 <div role="tabpanel" class="tab-pane" id="cityPane" aria-labelledby="cityTab">
                     <div class="row">
-                        <div class="col-md-7 col-xs-12">
+                        <div class="col-lg-7 col-md-12">
                             <div class="ecDom" id="totalMap"></div>
                         </div>
-                        <div class="col-md-5 col-xs-12">
+                        <div class="col-lg-5 col-md-12">
                             <div class="ecDom" id="totalBar"></div>
                         </div>
                     </div>
                 </div>
                 <div role="tabpanel" class="tab-pane" id="drillPane" aria-labelledby="drillTab">
                     <div class="row">
-                        <div class="col-md-7 col-xs-12">
+                        <div class="col-lg-7 col-md-12">
                             <div class="ecDom" id="facetMap"></div>
                         </div>
-                        <div class="col-md-5 col-xs-12">
+                        <div class="col-lg-5 col-md-12">
                             <div class="ecDom" id="drillBar"></div>
                         </div>
                     </div>
                 </div>
                 <div role="tabpanel" class="tab-pane" id="admPane" aria-labelledby="admTab">
                     <div class="row">
-                        <div class="col-md-12 col-xs-12">
+                        <div class="col-lg-12 col-md-12">
                             <div class="ecDom" id="admMap"></div>
                         </div>
                     </div>
@@ -138,72 +143,121 @@
         let chartChangeBar = echarts.init(document.getElementById('changeBar'), 'inforgraphic', {renderer: "svg"});
         let chartTotalMap = echarts.init(document.getElementById('totalMap'), 'inforgraphic', {renderer: "svg"});
         let chartTotalBar = echarts.init(document.getElementById('totalBar'), 'essos', {renderer: "svg"});
-        let chartFacetMap = echarts.init(document.getElementById('facetMap'), 'inforgraphic', {renderer: "svg"});
+        let chartDrillMap = echarts.init(document.getElementById('facetMap'), 'inforgraphic', {renderer: "svg"});
         let chartDrillBar = echarts.init(document.getElementById('drillBar'), 'inforgraphic', {renderer: "svg"});
         let chartAdmMap = echarts.init(document.getElementById('admMap'), 'inforgraphic', {renderer: "svg"});
-        async function initChartOnLoad() {
-            let chinaGeoJson = await getGeoJson('100000_full.json', true)
-            let alladcode = await getGeoJson('all.json')
-            initEchartsTlMap(chinaGeoJson, '中华人民共和国', chartMainMap, alladcode, [[78, 50], [130, 18]],
-                showLabel.checked)
-            initEchartsChangeBar(ageingTrend, chartChangeBar, 2010, 2020, showLabel.checked)
-        }
-        initChartOnLoad()
+
+        function initChartOnLoad() {
+            if (typeof(chnGeoJsons) === "undefined"){
+                loadScript("src/100000.js", () => {
+                    initEchartsTlMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartMainMap, [[78, 50], [130, 18]],
+                        showLabel.checked);
+                    initEchartsChangeBar(ageingTrend, chartChangeBar, 2010, 2020, showLabel.checked);
+                })
+            }else{
+                initEchartsTlMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartMainMap, [[78, 50], [130, 18]],
+                    showLabel.checked);
+                initEchartsChangeBar(ageingTrend, chartChangeBar, 2010, 2020, showLabel.checked);
+            }
+            if (typeof(acodes) === "undefined"){
+                loadScript("src/adcodes.js", ()=>{})
+            }
+        };
+        window.addEventListener('onload', () => {
+            chartMainMap.showLoading('default', {text: '数据加载中...', fontSize: 14});
+            chartChangeBar.showLoading('default', {text: '数据加载中...', fontSize: 14});
+            initChartOnLoad().then(() => {
+                chartMainMap.hideLoading();
+                chartChangeBar.hideLoading()
+            });
+        })
         //切换tab
         let triggerTabProv = document.querySelector('#navTab a[href="#provTab"]');
         let triggerTabCity = document.querySelector('#navTab a[href="#cityTab"]');
         let triggerTabDrill = document.querySelector('#navTab a[href="#drillTab"]');
         let triggerTabAdm = document.querySelector('#navTab a[href="#admTab"]');
         async function renderTabProv() {
-            let chinaGeoJson = await getGeoJson('100000_full.json', true);
-            let alladcode = await getGeoJson('all.json');
-            initEchartsTlMap(chinaGeoJson, '中国', chartMainMap, alladcode, [[78, 50], [130, 18]],
-                showLabel.checked);
-            initEchartsChangeBar(ageingTrend, chartChangeBar, 2010, 2020, showLabel.checked);     
-        }
-        triggerTabProv.addEventListener('click', async function(evt){
+            await initChartOnLoad();
+        };
+        triggerTabProv.addEventListener('click', (evt) => {
             evt.preventDefault();
-            await renderTabProv();
+            renderTabProv();
         });
-        async function renderTabCity() {
-            let chinaGeoJson = await getGeoJson('100000_full.json');
-            initEchartsTotalMap(chnGeoJson, '分市', chinaGeoJson, chartTotalMap);
+        function renderTabCity() {
+            // let chinaGeoJson = await getGeoJson('100000_full.json');
+            if (typeof(chnGeoJson) === "undefined"){
+                loadScript('src/chnGeoJson.js', () => {    
+                    initEchartsTotalMap(chnGeoJson, '分市', chnGeoJsons['中华人民共和国'], chartTotalMap)
+                });
+            }else{
+                initEchartsTotalMap(chnGeoJson, '分市', chnGeoJsons['中华人民共和国'], chartTotalMap);
+            }
             initEchartsTotalBar(ageingData, chartTotalBar, 30, showLabel.checked);
             echarts.connect([chartTotalMap, chartTotalBar]);
-        }
-        triggerTabCity.addEventListener('click', async function(evt){
+        };
+        triggerTabCity.addEventListener('click', (evt) => {
             evt.preventDefault();
-            await renderTabCity();
+            chartTotalMap.resize();
+            chartTotalMap.showLoading('default', {text: '数据加载中...', fontSize: 14});
+            chartTotalBar.resize();
+            chartTotalBar.showLoading('default', {text: '数据加载中...', fontSize: 14});
+            renderTabCity()
         });
         async function renderTabDrill() {
-            let chinaGeoJson = await getGeoJson('100000_full.json', true);
-            let alladcode = await getGeoJson('all.json');
-            initEchartsDrillMap(chinaGeoJson, '中华人民共和国', chartFacetMap, alladcode, showLabel.checked);
+            // let chinaGeoJson = await getGeoJson('100000_full.json', true);
+            // let alladcode = await getGeoJson('all.json');
+            if (typeof(chnGeoJsons) === "undefined") {
+                await loadScript('src/100000.js', () => {
+                    initEchartsDrillMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartDrillMap, alladcode, showLabel.checked);                    
+                });
+            }else{
+                initEchartsDrillMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartDrillMap, alladcode, showLabel.checked);  
+            }
             initEchartsDrillBar(ageingData, '中华人民共和国', chartDrillBar, showLabel.checked);
-            echarts.connect([chartFacetMap, chartDrillBar]);     
-        }
-        triggerTabDrill.addEventListener('click', async function(evt){
+            echarts.connect([chartDrillMap, chartDrillBar]); 
+        };
+        triggerTabDrill.addEventListener('click', (evt) => {
             evt.preventDefault();
-            await renderTabDrill();
+            chartDrillMap.resize();
+            chartDrillMap.showLoading('default', {text: '数据加载中...', fontSize: 14});
+            chartDrillBar.resize();
+            chartDrillBar.showLoading('default', {text: '数据加载中...', fontSize: 14}); 
+            renderTabDrill();
         });
         async function renderTabAdm() {
-            let chinaGeoJson = await getGeoJson('100000_full.json', true);
-            let alladcode = await getGeoJson('all.json');
-            initEchartsAdmMap(chinaGeoJson, '中华人民共和国', chartAdmMap, alladcode, showLabel.checked);  
-        }
-        triggerTabAdm.addEventListener('click', async function(evt){
+            // let chinaGeoJson = await getGeoJson('100000_full.json', true);
+            // let alladcode = await getGeoJson('all.json');
+            if (typeof(chnGeoJsons) === "undefined") {
+                await loadScript('src/100000.js', () => {
+                    initEchartsAdmMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartAdmMap, alladcode, showLabel.checked);
+                });
+            }else{
+                initEchartsAdmMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartAdmMap, alladcode, showLabel.checked);
+            }
+        };
+        triggerTabAdm.addEventListener('click', (evt) => {
             evt.preventDefault();
-            await renderTabAdm();
+            chartAdmMap.resize();
+            chartAdmMap.showLoading('default', {text: '数据加载中...', fontSize: 14});
+            renderTabAdm();
         });
         //自适应
         window.onresize = function() {
-            chartMainMap.resize();
-            chartChangeBar.resize();
-            chartFacetMap.resize();
-            chartTotalMap.resize();
-            chartTotalBar.resize();
-            chartDrillBar.resize();
-            chartAdmMap.resize();
+            if (triggerTabProv.className.indexOf('active') > -1) {
+                chartMainMap.resize({animation: {duration: 100}});
+                chartChangeBar.resize({animation: {duration: 100}});
+            }
+            if (triggerTabCity.className.indexOf('active') > -1) {
+                chartTotalMap.resize({animation: {duration: 100}});
+                initEchartsTotalBar(ageingData, chartTotalBar, 30, showLabel.checked);
+            }
+            if (triggerTabDrill.className.indexOf('active') > -1) {
+                chartDrillMap.resize({animation: {duration: 100}});
+                initEchartsDrillBar(ageingData, '中华人民共和国', chartDrillBar, showLabel.checked);
+            }
+            if (triggerTabAdm.className.indexOf('active') > -1) {
+                chartAdmMap.resize({animation: {duration: 100}});
+            }
         }
         //监听label switch
         showLabel.addEventListener('click', async function(evt){
@@ -220,874 +274,6 @@
                 await renderTabAdm();
             }
         });
-        //echarts绘图
-        function initEchartsTlMap(geoJson, name, chart, alladcode, bounding_coords=null, show_label=true) {
-            echarts.registerMap(name, geoJson);
-            let option = {
-                timeline: {
-                    data: Object.keys(ageingTrend),
-                    autoPlay: true,
-                    playInterval: 3000
-                },
-                toolbox: {
-                    show: true,
-                    orient: 'vertical',
-                    left: 'left',
-                    top: 'top',
-                    feature: {
-                        dataView: {readOnly: false},
-                        restore: {},
-                        saveAsImage: {}
-                    }
-                },
-                tooltip: {
-                    show: true,
-                    formatter: function(params) {
-                        var val = params.value;
-                        return(params.marker + ' ' + params.name + ' <b>' + val + '%</b>');
-                    }
-                },
-                options: [],
-                series: []
-            }
-            for (var yr in ageingTrend) {
-                option['options'].push({
-                    title: {
-                        text: '常住人口老龄化率',
-                        subtext: yr,
-                        left: 'center'
-                    },
-                    series: [{
-                        name: '老龄化率',
-                        data: ageingTrend[yr],
-                        itemStyle: {
-                            borderColor: "#EEE"
-                        }
-                    }],
-                    visualMap: {
-                        min: 5,
-                        max: 35,
-                        text: ['高', '低'],
-                        realtime: false,
-                        calculable: true,
-                        inRange: {
-                            color: ['#FDE725', '#440154']
-                        }
-                    },
-                    boundingCoords: bounding_coords
-                })
-                option['series'].push({
-                    type: 'map',
-                    map: name,
-                    label: {
-                        show: show_label,
-                        formatter: function(params) {
-                            if (isNaN(params.value)) {
-                                return('')
-                            }else{
-                                return(params.value + '%')
-                            }
-                        },
-                        color: "#FFF",
-                        backgroundColor: "#00000055",
-                        bordercolor: "#DDD"
-                    },
-                    itemStyle: {
-                        borderColor: "#EEE"
-                    }
-                })
-            };
-            chart.setOption(option, true);
-            chart.resize()
-        }
-        function initEchartsTotalMap(geoJson, name, bgGeoJson, chart) {
-            const topn = 30;
-            echarts.registerMap(name, geoJson);
-            echarts.registerMap('分省', bgGeoJson);
-            linesData = getGeoJsonLines(bgGeoJson);
-            let vizData = [];
-            for (var k in ageingData) {
-                if (k !== '中华人民共和国') {
-                    for (var i=0; i<ageingData[k].length; i++){
-                        if (! isNaN(ageingData[k][i].value)) {
-                            vizData.push(ageingData[k][i])
-                        }
-                    }                    
-                }
-            }
-            vizData = vizData.sort((x, y) => Number(x.value) - Number(y.value));
-            vizDataTopN = vizData.slice(vizData.length-topn, vizData.length);
-            console.log(vizDataTopN);
-            vizDataTail = vizData.slice(0, vizData.length-topn);
-            vizData = vizDataTopN.concat(vizDataTail);
-            delete vizDataTopN;
-            delete vizDataTail;
-            let option = {
-                title: {
-                    text: '常住人口老龄化率',
-                    subtext: 2020,
-                    left: 'center'
-                },
-                toolbox: {
-                    show: true,
-                    orient: 'vertical',
-                    left: 'left',
-                    top: 'top',
-                    feature: {
-                        dataView: {readOnly: false},
-                        restore: {},
-                        saveAsImage: {}
-                    }
-                },
-                geo: {
-                    map: '分省',
-                    itemStyle: {
-                        borderColor: '#DDD'
-                    }
-                },
-                tooltip: {
-                    show: true,
-                    formatter: function(params) {
-                        var val = params.value;
-                        return(params.marker + ' ' + params.name + ' <b>' + val + '%</b>');
-                    }
-                },
-                visualMap: {
-                    min: 5,
-                    max: 35,
-                    text: ['高', '低'],
-                    realtime: false,
-                    calculable: true,
-                    inRange: {
-                        color: ['#FDE725', '#440154']
-                    }
-                },
-                series: [{
-                    type: 'map',
-                    map: name,
-                    name: '老龄化率',
-                    data: vizData,
-                    itemStyle: {
-                        borderColor: "transparent",
-                        borderWidth: 0.1
-                    }
-                }, {
-                    type: 'lines',
-                    name: '背景',
-                    data: linesData,
-                    lineStyle: {
-                        color: "red",
-                        width: 10,
-                        opacity: 1
-                    },
-                    large: true,
-                    polyline: true,
-                    coordinateSystem: 'geo',
-                    z: 10,
-                    tooltip: {
-                        show: false
-                    }
-                }],
-                boundingCoords: [[78, 50], [130, 20]]
-            };
-            chart.setOption(option, true);
-            chart.resize();
-        }
-        function initEchartsTotalBar(dataJson, chart, topn=30, show_label=true) {
-            let newJson = [];
-            for (let k in dataJson){
-                for (let i = 0; i<dataJson[k].length; i++) {
-                    let v = dataJson[k][i];
-                    if (['黑龙江省', '吉林省', '辽宁省'].includes(k)) {
-                        v['片区'] = '东北'
-                    }else if (['内蒙古自治区', '河北省', '山西省', '北京市', '天津市'].includes(k)) {
-                        v['片区'] = '华北'
-                    }else if (['上海市', '江苏省', '浙江省', '安徽省', '福建省', '江西省', '山东省', '台湾省'].includes(k)) {
-                        v['片区'] = '华东'
-                    }else if (['河南省', '湖北省', '湖南省'].includes(k)) {
-                        v['片区'] = '华中'
-                    }else if (['广东省‘, ’广西壮族自治区', '海南省', '香港特别行政区', '澳门特别行政区'].includes(k)) {
-                        v['片区'] = '华南'
-                    }else if (['重庆市', '四川省', '贵州省', '云南省', '西藏自治区'].includes(k)) {
-                        v['片区'] = '西南'
-                    }else if (['陕西省', '甘肃省', '青海省', '宁夏回族自治区', '新疆维吾尔自治区'].includes(k)) {
-                        v['片区'] = '西北'
-                    }
-                    v['parent'] = k;
-                    if (! isNaN(v['value'])){
-                        newJson.push(v);                        
-                    }
-                }
-            }
-            newJson = newJson.sort((x, y) => Number(x.value) - Number(y.value));
-            let visData = {'东北': [], '华北': [], '华东': [], '华中': [], '华南': [], '西北': [], '西南': []};
-            let axisLbl = [];
-            let placeHolders = [];
-            for (let i=0; i<topn; i++) {
-                placeHolders.push(newJson[newJson.length-1]['value']);
-                for (let k in visData){
-                    if (k === newJson[newJson.length-topn+i]['片区']){
-                        visData[k].push(newJson[newJson.length-topn+i]['value']);
-                    }else{
-                        visData[k].push(null);
-                    }
-                }
-                axisLbl.push(newJson[newJson.length-topn+i]['name']);
-            }
-            let option = {
-                title: {
-                    text: '老龄化前' + topn + '名',
-                    subtext: '2020',
-                    left: 'center'
-                },
-                grid: {
-                    left: '15%',
-                    right: '20%',
-                    bottom: '5%'
-                },
-                tooltip: {
-                    show: true,
-                    formatter: function(params){
-                            return params.seriesName + '<br>' + params.marker + '  ' +
-                                params.name + '<span style="font-weight:bold;padding-left:1em">' + 
-                                params.value + '%</span>' 
-                        }
-                },
-                toolbox: {
-                    show: true,
-                    orient: 'vertical',
-                    left: 'right',
-                    top: 'top',
-                    feature: {
-                        dataView: {readOnly: false},
-                        restore: {},
-                        saveAsImage: {}
-                    }
-                },
-                legend: {
-                    show: true,
-                    left: 'right',
-                    top: 'middle',
-                    orient: 'vertical',
-                    data: ['东北', '华北', '华东', '华中', '华南', '西北', '西南'],
-                    textStyle: {
-                        fontSize: 10
-                    }
-                },
-                yAxis: {
-                    show: true,
-                    type: 'category',
-                    splitLine: {
-                        lineStyle: {
-                            color: "#EEE"
-                        }
-                    },
-                    data: axisLbl,
-                    axisLabel: {
-                        fontSize: 9
-                    },
-                    axisTick: {
-                        show: false
-                    }
-                },
-                xAxis: {
-                    type: 'value',
-                    splitLine: {
-                        lineStyle: {
-                            color: "#EEE"
-                        }
-                    },
-                    axisLabel: {
-                        formatter: '{value}%'
-                    }
-                },
-                series: [{
-                    name: '老龄化率',
-                    type: 'bar',
-                    data: placeHolders,
-                    itemStyle: {
-                        color: 'transparent'
-                    },
-                    barGap: '-50%',
-                    tooltip: {
-                        show: false
-                    },
-                    z: 3
-                }, {
-                    name: '东北',
-                    type: 'bar',
-                    stack: 'total',
-                    data: visData['东北'],
-                    emphasis: {
-                        focus: 'self'
-                    },
-                    label: {
-                        show: show_label,
-                        position: 'right',
-                        distance: 10,
-                        color: '#999',
-                        formatter: function(params){
-                            if (params.value !== null){
-                                return params.value + '%'
-                            }
-                        }
-                    }
-                }, {
-                    name: '华北',
-                    type: 'bar',
-                    stack: 'total',
-                    data: visData['华北'],
-                    emphasis: {
-                        focus: 'self'
-                    },
-                    label: {
-                        show: show_label,
-                        position: 'right',
-                        distance: 10,
-                        color: '#999',
-                        formatter: function(params){
-                            if (params.value !== null){
-                                return params.value + '%'
-                            }
-                        }
-                    }
-                }, {
-                    name: '华东',
-                    type: 'bar',
-                    stack: 'total',
-                    data: visData['华东'],
-                    emphasis: {
-                        focus: 'self'
-                    },
-                    label: {
-                        show: show_label,
-                        position: 'right',
-                        distance: 10,
-                        color: '#999',
-                        formatter: function(params){
-                            if (params.value !== null){
-                                return params.value + '%'
-                            }
-                        }
-                    }
-                }, {
-                    name: '华中',
-                    type: 'bar',
-                    stack: 'total',
-                    data: visData['华中'],
-                    emphasis: {
-                        focus: 'self'
-                    },
-                    label: {
-                        show: show_label,
-                        position: 'right',
-                        distance: 10,
-                        color: '#999',
-                        formatter: function(params){
-                            if (params.value !== null){
-                                return params.value + '%'
-                            }
-                        }
-                    }
-                }, {
-                    name: '华南',
-                    type: 'bar',
-                    stack: 'total',
-                    data: visData['华南'],
-                    emphasis: {
-                        focus: 'self'
-                    },
-                    label: {
-                        show: show_label,
-                        position: 'right',
-                        distance: 10,
-                        color: '#999',
-                        formatter: function(params){
-                            if (params.value !== null){
-                                return params.value + '%'
-                            }
-                        }
-                    }
-                }, {
-                    name: '西南',
-                    type: 'bar',
-                    stack: 'total',
-                    data: visData['西南'],
-                    emphasis: {
-                        focus: 'self'
-                    },
-                    label: {
-                        show: show_label,
-                        position: 'right',
-                        distance: 10,
-                        color: '#999',
-                        formatter: function(params){
-                            if (params.value !== null){
-                                return params.value + '%'
-                            }
-                        }
-                    }
-                }, {
-                    name: '西北',
-                    type: 'bar',
-                    stack: 'total',
-                    data: visData['西北'],
-                    emphasis: {
-                        focus: 'self'
-                    },
-                    label: {
-                        show: show_label,
-                        position: 'right',
-                        distance: 10,
-                        color: '#999',
-                        formatter: function(params){
-                            if (params.value !== null){
-                                return params.value + '%'
-                            }
-                        }
-                    }
-                }],
-                color: ['#c1232b', '#27727b', '#e87c25', '#fcce10', '#b5c334', '#f3a43b']
-            }
-            chart.setOption(option, true);
-            chart.resize();
-        }
-        function initEchartsChangeBar(dataJson, chart, base=2010, compare=2020, show_label=true) {
-            let option = {
-                title: {
-                    text: '各省老龄化率变迁',
-                    subtext: base + ' ~ ' + compare,
-                    left: 'center'
-                },
-                grid: {
-                    left: '15%',
-                    bottom: '5%'
-                },
-                toolbox: {
-                    show: true,
-                    orient: 'vertical',
-                    left: 'left',
-                    top: 'top',
-                    feature: {
-                        dataView: {readOnly: false},
-                        restore: {},
-                        saveAsImage: {}
-                    }
-                },
-                tooltip: {
-                    show: true
-                },
-                yAxis: {
-                    show: false,
-                    type: 'category',
-                    splitLine: {
-                        lineStyle: {
-                            color: "#EEE"
-                        }
-                    },
-                    data: []
-                },
-                xAxis: {
-                    type: 'value',
-                    splitLine: {
-                        lineStyle: {
-                            color: "#EEE"
-                        }
-                    },
-                    axisLabel: {
-                        formatter: '{value}%'
-                    }
-                },
-                series: [{
-                    name: base.toString(),
-                    type: 'scatter',
-                    label: {
-                        show: show_label,
-                        position: 'left',
-                        distance: 10,
-                        color: '#999',
-                        formatter: function(params){
-                            return params.name + ': ' + params.value[0] + '%'
-                        }
-                    },
-                    tooltip: {
-                        formatter: function(params){
-                            return params.seriesName + '<br>' + params.marker + '  ' +
-                                params.name + '<span style="font-weight:bold;padding-left:1em">' + 
-                                params.value[0] + '%</span>' 
-                        }
-                    },
-                    color: '#FDE725',
-                    data: []
-                }, {
-                    name: compare.toString(),
-                    type: 'scatter',
-                    tooltip: {
-                        formatter: function(params){
-                            return params.seriesName + '<br>' + params.marker + '  ' +
-                                params.name + '<span style="font-weight:bold;padding-left:1em">' + 
-                                params.value[0] + '%</span>' 
-                        }
-                    },
-                    label: {
-                        show: show_label,
-                        position: 'right',
-                        distance: 10,
-                        color: '#999',
-                        formatter: function(params){
-                            return params.value[0] + '%'
-                        }
-                    },
-                    color: '#440154',
-                    data: []
-                }, {
-                    name: '辅助',
-                    type: 'bar',
-                    stack: '变化',
-                    barWidth: 3,
-                    tooltip: {
-                        show: false
-                    },
-                    itemStyle: {
-                        barBorderColor: 'rgba(0,0,0,0)',
-                        color: 'rgba(0,0,0,0)'
-                    },
-                    emphasis: {
-                        itemStyle: {
-                            barBorderColor: 'rgba(0,0,0,0)',
-                            color: 'rgba(0,0,0,0)'
-                        }
-                    },
-                    data: []
-                }, {
-                    name: '变迁',
-                    type: 'bar',
-                    stack: '变化',
-                    tooltip: {
-                        formatter: function(params){
-                            return params.seriesName + '<br>' + params.marker + '  ' +
-                                params.name + '<span style="font-weight:bold;padding-left:1em">' + 
-                                params.value + '%</span>' 
-                        }
-                    },
-                   barWidth: 3,
-                    itemStyle: {
-                        color: new echarts.graphic.LinearGradient(
-                            0, 0, 1, 0,
-                            [
-                                {offset: 0, color: '#FDE725'},
-                                {offset: 1, color: '#440154'}
-                            ]
-                        )
-                    },
-                    data: []
-                }]
-            }
-            let compareArray = dataJson[compare].sort((x, y) => x.value - y.value);
-            for (var i=0; i<compareArray.length; i++){
-                option['yAxis']['data'].push(compareArray[i]['name']);
-                option['series'][1]['data'].push([compareArray[i]['value'], i]);
-                for (var j=0; j<dataJson[base].length; j++) {
-                    if (dataJson[base][j]['name'] === compareArray[i]['name']) {
-                        option['series'][0]['data'].push([dataJson[base][j]['value'], i])
-                        option['series'][2]['data'].push(dataJson[base][j]['value'])
-                        option['series'][3]['data'].push(
-                            (compareArray[i]['value']-dataJson[base][j]['value']).toFixed(1))
-                    }
-                }
-            };
-            chart.setOption(option, true);
-            chart.resize()
-        }
-        function initEchartsDrillMap(geoJson, name, chart, alladcode, show_label=true, border_color='#EEE') {
-            echarts.registerMap(name, geoJson);
-            let option = {
-                title: {
-                    text: name,
-                    left: 'center'
-                },
-                toolbox: {
-                    show: true,
-                    orient: 'vertical',
-                    left: 'left',
-                    top: 'top',
-                    feature: {
-                        dataView: {readOnly: false},
-                        restore: {},
-                        saveAsImage: {}
-                    }
-                },
-                tooltip: {
-                    show: true,
-                    formatter: function(params) {
-                        var val = params.value;
-                        return(params.marker + ' ' + params.name + ' <b>' + val + '%</b>');
-                    }
-                },
-                visualMap: {
-                    min: 5,
-                    max: 35,
-                    text: ['高', '低'],
-                    realtime: false,
-                    calculable: true,
-                    inRange: {
-                        color: ['#FDE725', '#440154']
-                    }
-                },
-                series: [{
-                    type: 'map',
-                    map: name,
-                    name: '老龄化率',
-                    data: ageingData[name].sort((x, y) => x.value - y.value),
-                    label: {
-                        show: show_label,
-                        formatter: function(params) {
-                            if (isNaN(params.value)) {
-                                return('')
-                            }else{
-                                return(params.value + '%')
-                            }
-                        },
-                        color: "#FFF",
-                        backgroundColor: "#00000055",
-                        bordercolor: "#DDD"
-                    },
-                    itemStyle: {
-                        borderColor: border_color,
-                        borderWidth: 1
-                    }
-                }]
-            }
-            if (name=='中华人民共和国'){
-                option['boundingCoords'] = [[78, 50], [130, 20]]
-            }
-            chart.setOption(option, true);
-            chart.resize();
-            // 解绑click事件
-            chart.off("click");
-            //给地图添加监听事件
-            chart.on('click', params => {
-                let clickRegionCode = alladcode.filter(areaJson => areaJson.name === params.name)[0].adcode;
-                if (clickRegionCode - 100*(clickRegionCode/100).toFixed(0) === 0) {
-                    // 末2位为0
-                    getGeoJson(clickRegionCode + '_full.json').then(regionGeoJson => initEchartsDrillMap(
-                        regionGeoJson, params.name, chart, alladcode, showLabel.checked))
-                        .catch(err => {
-                            getGeoJson('100000_full.json', true).then(
-                                chinaGeoJson => initEchartsDrillMap(chinaGeoJson, '中华人民共和国', chart, alladcode,
-                                    showLabel.checked)   
-                            )
-                        });
-                    try{
-                        initEchartsDrillBar(ageingData, params.name, chartDrillBar, showLabel.checked);
-                    }catch{
-                        initEchartsDrillBar(ageingData, '中华人民共和国', chartDrillBar, showLabel.checked);
-                    }
-                }else{
-                    // 末两位不是0，则已到县级
-                    getGeoJson('100000_full.json').then(chinaGeoJson => initEchartsDrillMap(
-                        chinaGeoJson, '中华人民共和国', chart, alladcode, showLabel.checked))
-                    initEchartsDrillBar(ageingData, '中华人民共和国', chartDrillBar, showLabel.checked)
-                }
-            })
-        }
-        function initEchartsDrillBar(dataJson, name, chart, show_label=true){
-            let vizData = dataJson[name];
-            vizData = vizData.sort((x, y) => x.value - y.value);
-            let axisLbl = [];
-            let axisFontSize = 11;
-            if (name == '中华人民共和国') {
-                axisFontSize = 9
-            }
-            let barData = [];
-            for (let i = 0; i<vizData.length; i++) {
-                axisLbl.push(vizData[i].name);
-                barData.push(vizData[i].value);
-            }
-            let option = {
-                title: {
-                    text: name,
-                    subtext: '2020',
-                    left: 'center'
-                },
-                grid: {
-                    left: '20%',
-                    bottom: '5%'
-                },
-                toolbox: {
-                    show: true,
-                    orient: 'vertical',
-                    left: 'left',
-                    top: 'top',
-                    feature: {
-                        dataView: {readOnly: false},
-                        restore: {},
-                        saveAsImage: {}
-                    }
-                },
-                tooltip: {
-                    show: true,
-                    formatter: function(params) {
-                        var val = params.value;
-                        return(params.marker + ' ' + params.name + ' <b>' + val + '%</b>');
-                    }
-                },
-                visualMap: {
-                    show: false,
-                    min: 5,
-                    max: 35,
-                    text: ['高', '低'],
-                    dimension: 0,
-                    realtime: false,
-                    calculable: true,
-                    inRange: {
-                        color: ['#FDE725', '#440154']
-                    }
-                },
-                yAxis: {
-                    show: true,
-                    type: 'category',
-                    splitLine: {
-                        lineStyle: {
-                            color: "#EEE"
-                        }
-                    },
-                    data: axisLbl,
-                    axisLabel: {
-                        fontSize: axisFontSize
-                    },
-                    axisTick: {
-                        show: false
-                    }
-                },
-                xAxis: {
-                    type: 'value',
-                    splitLine: {
-                        lineStyle: {
-                            color: "#EEE"
-                        }
-                    },
-                    axisLabel: {
-                        formatter: '{value}%'
-                    }
-                },
-                series: [{
-                    name: '老龄化率',
-                    type: 'bar',
-                    data: barData,
-                    label: {
-                        show: show_label,
-                        position: 'right',
-                        distance: 10,
-                        color: '#999',
-                        formatter: function(params){
-                            if (params.value !== null){
-                                return params.value + '%'
-                            }
-                        }
-                    }
-                }]
-            }
-            chart.setOption(option, true);
-            chart.resize();
-        }
-        function initEchartsAdmMap(geoJson, name, chart, alladcode, show_label=true, border_color='#333') {
-            echarts.registerMap(name, geoJson);
-            let option = {
-                title: {
-                    text: name,
-                    left: 'center'
-                },
-                toolbox: {
-                    show: true,
-                    orient: 'vertical',
-                    left: 'left',
-                    top: 'top',
-                    feature: {
-                        dataView: {readOnly: false},
-                        restore: {},
-                        saveAsImage: {}
-                    }
-                },
-                tooltip: {
-                    show: false
-                },
-                geo: {
-                    map: name,
-                    itemStyle: {
-                        borderColor: border_color,
-                        areaColor: 'transparent',
-                        borderWidth: 0.5
-                    },
-                    label: {
-                        show: show_label,
-                        fontSize: 10,
-                        color: '#666'
-                    }
-                }
-            }
-            if (name=='中华人民共和国'){
-                option['boundingCoords'] = [[78, 50], [130, 12]]
-            }
-            chart.setOption(option, true);
-            chart.resize();
-            // 解绑click事件
-            chart.off("click");
-            //给地图添加监听事件
-            chart.on('click', params => {
-                let clickRegionCode = alladcode.filter(areaJson => areaJson.name === params.name)[0].adcode;
-                if (clickRegionCode - 100*(clickRegionCode/100).toFixed(0) === 0) {
-                    // 末2位为0
-                    getGeoJson(clickRegionCode + '_full.json').then(regionGeoJson => initEchartsAdmMap(
-                        regionGeoJson, params.name, chart, alladcode, showLabel.checked))
-                        .catch(err => {
-                            getGeoJson('100000_full.json', true).then(
-                                chinaGeoJson => initEchartsAdmMap(chinaGeoJson, '中华人民共和国', chart, alladcode,
-                                    showLabel.checked)   
-                            )
-                        });
-                }else{
-                    // 末两位不是0，则已到县级
-                    getGeoJson('100000_full.json').then(chinaGeoJson => initEchartsAdmMap(
-                        chinaGeoJson, '中华人民共和国', chart, alladcode, showLabel.checked))
-                }
-            })
-        }
-        //增加cp属性
-        function setCP(geoJsonData) {
-            for (var i = 0; i < geoJsonData['features'].length; i++) {
-                if (geoJsonData['features'][i]['properties'].hasOwnProperty('centroid')){
-                    geoJsonData['features'][i]['properties']['cp'] = geoJsonData['features'][i]['properties']['centroid']
-                }else{
-                    geoJsonData['features'][i]['properties']['cp'] = geoJsonData['features'][i]['properties']['center']
-                }
-            }
-            return geoJsonData
-        }
-        //获取地图json数据
-        async function getGeoJson(jsonName, set_cp=false) {
-            ret = await $.get(publicUrl + jsonName)
-            if (set_cp) {
-                ret = setCP(ret)
-            }
-            return ret
-        }
-        //抽取geojson线段
-        function getGeoJsonLines(geoJson, lineStyle={color: '#FFF', width: 0.25}) {
-            let ret = [];
-            for (var i=0; i<geoJson['features'].length; i++){
-                let feature = geoJson['features'][i];
-                for (var j=0; j<feature['geometry']['coordinates'].length; j++){
-                    let coord = feature['geometry']['coordinates'][j];
-                    ret.push({
-                        'name': feature['properties']['adcode'] + j, 
-                        'coords': coord[0],
-                        'lineStyle': lineStyle
-                    });
-                }
-            }
-            return ret;
-        }
     </script>
 </body>
 

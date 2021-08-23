@@ -11,5 +11,6 @@
 
 ## 说明
 
-主要基于Echarts 5制图
-需要用到bootcdn
+- 主要基于Echarts 5制图
+- 需要用到bootcdn
+- 修改`src/ageinData.js`再commit即可更新视图
