@@ -2,7 +2,7 @@
  * @Author: wyy
  * @Date: 2021-08-20 09:39:47
  * @LastEditors: user
- * @LastEditTime: 2021-08-23 15:08:04
+ * @LastEditTime: 2021-08-24 15:55:26
  * @Descripttion: Ageing geo
 -->
 
@@ -59,17 +59,16 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.0.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.1.2/echarts.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.1.2/theme/infographic.min.js"></script>
-    <script src="src/func.js"></script>
-    <script src="src/ageingData.js"></script>
+    <script src="utils.js"></script>
 </head>
 
 <body>
     <div class="container-fluid">
         <div class="row qb-content-wrapper qb-main-content">
-            <div class="col-md-9 col-xs-9">
+            <div class="col-md-8 col-xs-8">
                 <h3 title="据第七次人口普查各地公报数据绘制">中国老龄化（60岁以上）地图</h3>
             </div>
-            <div class="col-md-2 col-xs-2">
+            <div class="col-md-3 col-xs-3">
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="showLabel" checked>
                     <label class="form-check-label" for="showLabel">显示标签</label>
@@ -137,7 +136,8 @@
     </div>
 
     <script>
-        const publicUrl = 'https://geo.datav.aliyun.com/areas_v3/bound/';
+        // const publicUrl = 'https://geo.datav.aliyun.com/areas_v3/bound/';
+        const publicUrl = 'src/'
         let showLabel = document.querySelector('#showLabel');
         let chartMainMap = echarts.init(document.getElementById('mainMap'), 'inforgraphic', {renderer: "svg"});
         let chartChangeBar = echarts.init(document.getElementById('changeBar'), 'inforgraphic', {renderer: "svg"});
@@ -147,28 +147,46 @@
         let chartDrillBar = echarts.init(document.getElementById('drillBar'), 'inforgraphic', {renderer: "svg"});
         let chartAdmMap = echarts.init(document.getElementById('admMap'), 'inforgraphic', {renderer: "svg"});
 
-        function initChartOnLoad() {
-            if (typeof(chnGeoJsons) === "undefined"){
-                loadScript("src/100000.js", () => {
-                    initEchartsTlMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartMainMap, [[78, 50], [130, 18]],
-                        showLabel.checked);
-                    initEchartsChangeBar(ageingTrend, chartChangeBar, 2010, 2020, showLabel.checked);
-                })
-            }else{
-                initEchartsTlMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartMainMap, [[78, 50], [130, 18]],
+        let chinaGeoJson = {};
+        let chnGeoJson = {};
+        let alladcode = [];
+        let ageingData = {};
+        let ageingTrend = {};
+        async function initChartOnLoad() {
+            // if (typeof(chnGeoJsons) === "undefined"){
+            //     loadScript("src/100000.js", () => {
+            //         initEchartsTlMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartMainMap, [[78, 50], [130, 18]],
+            //             showLabel.checked);
+            //         initEchartsChangeBar(ageingTrend, chartChangeBar, 2010, 2020, showLabel.checked);
+            //     })
+            // }else{
+            //     initEchartsTlMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartMainMap, [[78, 50], [130, 18]],
+            //         showLabel.checked);
+            //     initEchartsChangeBar(ageingTrend, chartChangeBar, 2010, 2020, showLabel.checked);
+            // }
+            await getJson('ageingData.json').then(jsonData => {
+                initEchartsChangeBar(jsonData['ageingTrend'], chartChangeBar, 2010, 2020, showLabel.checked);
+                ageingData = jsonData['ageingData'];
+                ageingTrend = jsonData['ageingTrend'];
+            })
+            await getGeoJson('100000_full.json').then(geoJson => {
+                initEchartsTlMap(geoJson, '中华人民共和国', chartMainMap, [[78, 50], [130, 18]],
                     showLabel.checked);
-                initEchartsChangeBar(ageingTrend, chartChangeBar, 2010, 2020, showLabel.checked);
-            }
-            if (typeof(acodes) === "undefined"){
-                loadScript("src/adcodes.js", ()=>{})
-            }
+                chinaGeoJson = geoJson;
+            });
+            await getJson('adcodes.json').then(jsonData => {
+                alladcode = jsonData;
+            });
+            await getGeoJson('chnGeoJson.json').then(geoJson => {
+                chnGeoJson = geoJson;
+            });
         };
         window.addEventListener('load', (evt) => {
             evt.preventDefault();
             chartMainMap.resize();
-            chartMainMap.showLoading('default', {text: '数据加载中...', fontSize: 14});
+            chartMainMap.showLoading('default', {text: '数据加载中...', fontSize: fitSize(14, 10)});
             chartChangeBar.resize();
-            chartChangeBar.showLoading('default', {text: '数据加载中...', fontSize: 14});
+            chartChangeBar.showLoading('default', {text: '数据加载中...', fontSize: fitSize(14, 10)});
             initChartOnLoad();
         })
         //切换tab
@@ -177,68 +195,71 @@
         let triggerTabDrill = document.querySelector('#navTab a[href="#drillTab"]');
         let triggerTabAdm = document.querySelector('#navTab a[href="#admTab"]');
         async function renderTabProv() {
-            await initChartOnLoad();
+            initEchartsChangeBar(ageingTrend, chartChangeBar, 2010, 2020, showLabel.checked);
+            initEchartsTlMap(chinaGeoJson, '中华人民共和国', chartMainMap, [[78, 50], [130, 18]], showLabel.checked);
         };
         triggerTabProv.addEventListener('click', (evt) => {
             evt.preventDefault();
             renderTabProv();
         });
-        function renderTabCity() {
+        async function renderTabCity() {
             // let chinaGeoJson = await getGeoJson('100000_full.json');
-            if (typeof(chnGeoJson) === "undefined"){
-                loadScript('src/chnGeoJson.js', () => {    
-                    initEchartsTotalMap(chnGeoJson, '分市', chnGeoJsons['中华人民共和国'], chartTotalMap)
-                });
-            }else{
-                initEchartsTotalMap(chnGeoJson, '分市', chnGeoJsons['中华人民共和国'], chartTotalMap);
-            }
+            // if (typeof(chnGeoJson) === "undefined"){
+            //     loadScript('src/chnGeoJson.js', () => {    
+            //         initEchartsTotalMap(chnGeoJson, '分市', chnGeoJsons['中华人民共和国'], chartTotalMap)
+            //     });
+            // }else{
+            //     initEchartsTotalMap(chnGeoJson, '分市', chnGeoJsons['中华人民共和国'], chartTotalMap);
+            // }
             initEchartsTotalBar(ageingData, chartTotalBar, 30, showLabel.checked);
+            initEchartsTotalMap(chnGeoJson, '分市', chinaGeoJson, chartTotalMap);
             echarts.connect([chartTotalMap, chartTotalBar]);
         };
         triggerTabCity.addEventListener('click', (evt) => {
             evt.preventDefault();
             chartTotalMap.resize();
-            chartTotalMap.showLoading('default', {text: '数据加载中...', fontSize: 14});
+            chartTotalMap.showLoading('default', {text: '数据加载中...', fontSize: fitSize(14, 10)});
             chartTotalBar.resize();
-            chartTotalBar.showLoading('default', {text: '数据加载中...', fontSize: 14});
+            chartTotalBar.showLoading('default', {text: '数据加载中...', fontSize: fitSize(14, 10)});
             renderTabCity()
         });
         async function renderTabDrill() {
-            // let chinaGeoJson = await getGeoJson('100000_full.json', true);
+            initEchartsDrillMap(chinaGeoJson, '中华人民共和国', chartDrillMap, alladcode, showLabel.checked);
             // let alladcode = await getGeoJson('all.json');
-            if (typeof(chnGeoJsons) === "undefined") {
-                await loadScript('src/100000.js', () => {
-                    initEchartsDrillMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartDrillMap, alladcode, showLabel.checked);                    
-                });
-            }else{
-                initEchartsDrillMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartDrillMap, alladcode, showLabel.checked);  
-            }
+            // if (typeof(chnGeoJsons) === "undefined") {
+            //     await loadScript('src/100000.js', () => {
+            //         initEchartsDrillMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartDrillMap, alladcode, showLabel.checked);                    
+            //     });
+            // }else{
+            //     initEchartsDrillMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartDrillMap, alladcode, showLabel.checked);  
+            // }
             initEchartsDrillBar(ageingData, '中华人民共和国', chartDrillBar, showLabel.checked);
             echarts.connect([chartDrillMap, chartDrillBar]); 
         };
         triggerTabDrill.addEventListener('click', (evt) => {
             evt.preventDefault();
             chartDrillMap.resize();
-            chartDrillMap.showLoading('default', {text: '数据加载中...', fontSize: 14});
+            chartDrillMap.showLoading('default', {text: '数据加载中...', fontSize: fitSize(14, 10)});
             chartDrillBar.resize();
-            chartDrillBar.showLoading('default', {text: '数据加载中...', fontSize: 14}); 
+            chartDrillBar.showLoading('default', {text: '数据加载中...', fontSize: fitSize(14, 10)}); 
             renderTabDrill();
         });
         async function renderTabAdm() {
             // let chinaGeoJson = await getGeoJson('100000_full.json', true);
+            initEchartsAdmMap(chinaGeoJson, '中华人民共和国', chartAdmMap, alladcode, showLabel.checked);
             // let alladcode = await getGeoJson('all.json');
-            if (typeof(chnGeoJsons) === "undefined") {
-                await loadScript('src/100000.js', () => {
-                    initEchartsAdmMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartAdmMap, alladcode, showLabel.checked);
-                });
-            }else{
-                initEchartsAdmMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartAdmMap, alladcode, showLabel.checked);
-            }
+            // if (typeof(chnGeoJsons) === "undefined") {
+            //     await loadScript('src/100000.js', () => {
+            //         initEchartsAdmMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartAdmMap, alladcode, showLabel.checked);
+            //     });
+            // }else{
+            //     initEchartsAdmMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartAdmMap, alladcode, showLabel.checked);
+            // }
         };
         triggerTabAdm.addEventListener('click', (evt) => {
             evt.preventDefault();
             chartAdmMap.resize();
-            chartAdmMap.showLoading('default', {text: '数据加载中...', fontSize: 14});
+            chartAdmMap.showLoading('default', {text: '数据加载中...', fontSize: fitSize(14, 10)});
             renderTabAdm();
         });
         //自适应

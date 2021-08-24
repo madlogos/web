@@ -286,20 +286,21 @@
             placeSearch.setPageIndex(page);
             //关键字查询
             placeSearch.search($keywords.val(), function(status, result) {
+              if ($keywords.val() !== '') {
 
-              if (status !== 'complete') {
-                alert('返回数据出错!');
+                if (status !== 'complete') {
+                  alert('返回数据出错!');
+                }
+
+                //render当前页的数据
+                markerList.render(result.poiList.pois);
+
+                if (!inited) {
+                  inited = true;
+                  //首次初始化
+                  initPagination(page, Math.ceil(result.poiList.count / result.poiList.pageSize));
+                }
               }
-
-              //render当前页的数据
-              markerList.render(result.poiList.pois);
-
-              if (!inited) {
-                inited = true;
-                //首次初始化
-                initPagination(page, Math.ceil(result.poiList.count / result.poiList.pageSize));
-              }
-
             });
           }
 
