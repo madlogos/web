@@ -2,7 +2,7 @@
  * @Author: wyy
  * @Date: 2021-08-20 09:39:47
  * @LastEditors: user
- * @LastEditTime: 2021-08-24 15:55:26
+ * @LastEditTime: 2021-08-25 15:40:16
  * @Descripttion: Ageing geo
 -->
 
@@ -55,11 +55,13 @@
         }
     </style>
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.0.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.0.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.1.2/echarts.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.1.2/theme/infographic.min.js"></script>
     <script src="utils.js"></script>
+    <script src="charts.js"></script>
 </head>
 
 <body>
@@ -72,8 +74,11 @@
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="showLabel" checked>
                     <label class="form-check-label" for="showLabel">显示标签</label>
+                    <span style="padding-left:1em">
+                        源代码: <a href="https://github.com/madlogos/web/tree/master/ageing" target="_blank"><i class="fab fa-github"></i></a>
+                    </span>
                 </div>
-            </div>             
+            </div>
             <ul id="navTab" class="nav nav-tabs tabs" role="tablist">
                 <li role="presentation" class="nav-item">
                     <a href="#provTab" class="nav-link active" role="tab" aria-controls="provPane" aria-selected="true"
@@ -152,6 +157,29 @@
         let alladcode = [];
         let ageingData = {};
         let ageingTrend = {};
+        async function loadData() {
+            if (Object.getOwnPropertyNames(ageingData).length === 0) {
+                await getJson('ageingData.json').then(jsonData => {
+                    ageingData = jsonData['ageingData'];
+                    ageingTrend = jsonData['ageingTrend'];
+                })
+            }
+            if (Object.getOwnPropertyNames(chinaGeoJson).length === 0) {
+                await getGeoJson('100000_full.json').then(geoJson => {
+                    chinaGeoJson = geoJson;
+                })               
+            }
+            if (alladcode.length === 0) {
+                await getJson('adcodes.json').then(jsonData => {
+                    alladcode = jsonData;
+                })              
+            }
+            if (Object.getOwnPropertyNames(chnGeoJson).length === 0) {
+                await getGeoJson('chnGeoJson.json').then(geoJson => {
+                    chnGeoJson = geoJson;
+                })              
+            }
+        }
         async function initChartOnLoad() {
             // if (typeof(chnGeoJsons) === "undefined"){
             //     loadScript("src/100000.js", () => {
@@ -164,22 +192,11 @@
             //         showLabel.checked);
             //     initEchartsChangeBar(ageingTrend, chartChangeBar, 2010, 2020, showLabel.checked);
             // }
-            await getJson('ageingData.json').then(jsonData => {
-                initEchartsChangeBar(jsonData['ageingTrend'], chartChangeBar, 2010, 2020, showLabel.checked);
-                ageingData = jsonData['ageingData'];
-                ageingTrend = jsonData['ageingTrend'];
+            await loadData().then(() => {
+                initEchartsChangeBar(ageingTrend, chartChangeBar, 2010, 2020, showLabel.checked);
+                initEchartsTlMap(chinaGeoJson, '中华人民共和国', chartMainMap, [[78, 50], [130, 18]],
+                    showLabel.checked);                
             })
-            await getGeoJson('100000_full.json').then(geoJson => {
-                initEchartsTlMap(geoJson, '中华人民共和国', chartMainMap, [[78, 50], [130, 18]],
-                    showLabel.checked);
-                chinaGeoJson = geoJson;
-            });
-            await getJson('adcodes.json').then(jsonData => {
-                alladcode = jsonData;
-            });
-            await getGeoJson('chnGeoJson.json').then(geoJson => {
-                chnGeoJson = geoJson;
-            });
         };
         window.addEventListener('load', (evt) => {
             evt.preventDefault();
@@ -195,8 +212,9 @@
         let triggerTabDrill = document.querySelector('#navTab a[href="#drillTab"]');
         let triggerTabAdm = document.querySelector('#navTab a[href="#admTab"]');
         async function renderTabProv() {
-            initEchartsChangeBar(ageingTrend, chartChangeBar, 2010, 2020, showLabel.checked);
-            initEchartsTlMap(chinaGeoJson, '中华人民共和国', chartMainMap, [[78, 50], [130, 18]], showLabel.checked);
+            // initEchartsChangeBar(ageingTrend, chartChangeBar, 2010, 2020, showLabel.checked);
+            // initEchartsTlMap(chinaGeoJson, '中华人民共和国', chartMainMap, [[78, 50], [130, 18]], showLabel.checked);
+            initChartOnLoad();
         };
         triggerTabProv.addEventListener('click', (evt) => {
             evt.preventDefault();
@@ -211,9 +229,11 @@
             // }else{
             //     initEchartsTotalMap(chnGeoJson, '分市', chnGeoJsons['中华人民共和国'], chartTotalMap);
             // }
-            initEchartsTotalBar(ageingData, chartTotalBar, 30, showLabel.checked);
-            initEchartsTotalMap(chnGeoJson, '分市', chinaGeoJson, chartTotalMap);
-            echarts.connect([chartTotalMap, chartTotalBar]);
+            await loadData().then(() => {
+                initEchartsTotalBar(ageingData, chartTotalBar, 30, showLabel.checked);        
+                initEchartsTotalMap(chnGeoJson, '分市', chinaGeoJson, chartTotalMap);
+                echarts.connect([chartTotalMap, chartTotalBar]);                
+            });
         };
         triggerTabCity.addEventListener('click', (evt) => {
             evt.preventDefault();
@@ -224,7 +244,6 @@
             renderTabCity()
         });
         async function renderTabDrill() {
-            initEchartsDrillMap(chinaGeoJson, '中华人民共和国', chartDrillMap, alladcode, showLabel.checked);
             // let alladcode = await getGeoJson('all.json');
             // if (typeof(chnGeoJsons) === "undefined") {
             //     await loadScript('src/100000.js', () => {
@@ -233,8 +252,11 @@
             // }else{
             //     initEchartsDrillMap(chnGeoJsons['中华人民共和国'], '中华人民共和国', chartDrillMap, alladcode, showLabel.checked);  
             // }
-            initEchartsDrillBar(ageingData, '中华人民共和国', chartDrillBar, showLabel.checked);
-            echarts.connect([chartDrillMap, chartDrillBar]); 
+            await loadData().then(() => {
+                initEchartsDrillBar(ageingData, '中华人民共和国', chartDrillBar, showLabel.checked);
+                initEchartsDrillMap(chinaGeoJson, '中华人民共和国', chartDrillMap, alladcode, showLabel.checked);
+                echarts.connect([chartDrillMap, chartDrillBar]);                 
+            });
         };
         triggerTabDrill.addEventListener('click', (evt) => {
             evt.preventDefault();
@@ -246,7 +268,9 @@
         });
         async function renderTabAdm() {
             // let chinaGeoJson = await getGeoJson('100000_full.json', true);
-            initEchartsAdmMap(chinaGeoJson, '中华人民共和国', chartAdmMap, alladcode, showLabel.checked);
+            await loadData().then(() => {
+                initEchartsAdmMap(chinaGeoJson, '中华人民共和国', chartAdmMap, alladcode, showLabel.checked);
+            });
             // let alladcode = await getGeoJson('all.json');
             // if (typeof(chnGeoJsons) === "undefined") {
             //     await loadScript('src/100000.js', () => {
