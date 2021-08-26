@@ -1,10 +1,11 @@
 /*
- * @Author: user
+ * @Author: wyy
  * @Date: 2021-08-25 09:10:47
- * @LastEditors: user
+ * @LastEditors: wyy
  * @LastEditTime: 2021-08-25 17:34:20
  * @Descripttion: 
  */
+
 //echarts绘图
 function initEchartsTlMap(geoJson, name, chart, bounding_coords=null, show_label=true) {
     
@@ -701,13 +702,15 @@ function initEchartsDrillMap(geoJson, name, chart, alladcode, show_label=true, b
     //给地图添加监听事件
     chart.on('click', params => {
         let clickRegion = alladcode.filter(areaJson => areaJson.name === params.name);
-        let mapName = params.name
-        if (typeof(clickRegion) === 'undefined' ||
-        parseInt(clickRegion[0].adcode/100)*100 !== clickRegion[0].adcode) {
-            clickRegion = [{'adcode': 100000}];
-            mapName = '中华人民共和国';
+        let mapName = params.name;
+        let mapCode = 100000;
+        if (clickRegion !== undefined){
+            mapCode = parseInt(clickRegion[0].adcode)
         }
-        getGeoJson(clickRegion[0].adcode + '_full.json').then(regionGeoJson => {
+        if (Math.floor(mapCode/100) * 100 !== mapCode) {
+            mapName = '中华人民共和国'
+        }
+        getGeoJson(mapCode + '_full.json').then(regionGeoJson => {
             initEchartsDrillBar(ageingData, mapName, chartDrillBar, showLabel.checked);            
             initEchartsDrillMap(regionGeoJson, mapName, chart, alladcode, showLabel.checked);
         }).catch(err => {
