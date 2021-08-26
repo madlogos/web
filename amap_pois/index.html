@@ -71,7 +71,7 @@
   <script type="text/javascript" src="static/js/jquery-1.12.4.min.js"></script>
   <script type="text/javascript" src="static/js/jquery.twbsPagination.min.js"></script>
   <script type="text/javascript" src="point.js"></script>
-  <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&plugin=AMap.Autocomplete&key=e8e9e6b236c58be0bf648f923a4da599"></script>
+  <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.16&plugin=AMap.Autocomplete&key=e8e9e6b236c58be0bf648f923a4da599"></script>
   <script type="text/javascript" src="static/js/addToolbar.js"></script>
   <!-- UI组件库 1.0 -->
   <script src="static/js/main.js"></script>
@@ -93,7 +93,12 @@
       var point = points[i]
       var marker = new AMap.Marker({
         position: point.lnglat,
-        icon: 'static/img/pin' + point.style + '.png',
+        icon: new AMap.Icon({
+          image: 'static/img/pin' + point.style + '.svg',
+          size: new AMap.Size(60, 60),
+          imageSize: new AMap.Size(60, 60)
+        }),
+        offset: new AMap.Pixel(-30, -60),
         map: map
       });
       marker.content = '<h3>' + point.name + '</h3><hr><p><b>地址：</b>' + point.addr
@@ -285,23 +290,24 @@
             //设置当前页
             placeSearch.setPageIndex(page);
             //关键字查询
-            placeSearch.search($keywords.val(), function(status, result) {
-              if ($keywords.val() !== '') {
+			if ($keywords.val() !== '') {
+				placeSearch.search($keywords.val(), function(status, result) {
+				  console.log([$keywords.val(), status])
+				  if (status !== 'complete') {
+					alert('返回数据出错!');
+				  }
 
-                if (status !== 'complete') {
-                  alert('返回数据出错!');
-                }
+				  //render当前页的数据
+				  markerList.render(result.poiList.pois);
 
-                //render当前页的数据
-                markerList.render(result.poiList.pois);
+				  if (!inited) {
+					inited = true;
+					//首次初始化
+					initPagination(page, Math.ceil(result.poiList.count / result.poiList.pageSize));
+				  }
 
-                if (!inited) {
-                  inited = true;
-                  //首次初始化
-                  initPagination(page, Math.ceil(result.poiList.count / result.poiList.pageSize));
-                }
-              }
-            });
+				});
+			};
           }
 
           goPage(1);
