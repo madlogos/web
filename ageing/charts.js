@@ -1,3 +1,4 @@
+
 /*
  * @Author: wyy
  * @Date: 2021-08-25 09:10:47
@@ -68,6 +69,10 @@ function initEchartsTlMap(geoJson, name, chart, bounding_coords=null, show_label
         })
         option['series'].push({
             type: 'map',
+            projection: {
+                project: (point) => getGeoProj(name)(point),
+                unproject: (point) => getGeoProj(name).invert(point)
+            },
             map: name,
             roam: true,
             label: {
@@ -128,6 +133,10 @@ function initEchartsTotalMap(geoJson, name, bgGeoJson, chart, topn=30) {
         },
         geo: {
             map: '分省',
+            projection: {
+                project: (point) => getGeoProj(name)(point),
+                unproject: (point) => getGeoProj(name).invert(point)
+            },
             itemStyle: {
                 areaColor: "transparent",
                 borderColor: '#DDD',
@@ -157,6 +166,10 @@ function initEchartsTotalMap(geoJson, name, bgGeoJson, chart, topn=30) {
         },
         series: [{
             type: 'map',
+            projection: {
+                project: (point) => getGeoProj(name)(point),
+                unproject: (point) => getGeoProj(name).invert(point)
+            },
             map: name,
             name: '老龄化率',
             data: vizData,
@@ -669,6 +682,10 @@ function initEchartsDrillMap(geoJson, name, chart, alladcode, show_label=true, b
         series: [{
             type: 'map',
             map: name,
+            projection: {
+                project: (point) => getGeoProj(name)(point),
+                unproject: (point) => getGeoProj(name).invert(point)
+            },
             roam: true,
             name: '老龄化率',
             data: seriesData,
@@ -903,6 +920,10 @@ function initEchartsAdmMap(geoJson, name, chart, alladcode, show_label=true, bor
         },
         geo: {
             map: name,
+            projection: {
+                project: (point) => getGeoProj(name)(point),
+                unproject: (point) => getGeoProj(name).invert(point)
+            },
             roam: true,
             itemStyle: {
                 borderColor: border_color,
@@ -964,6 +985,10 @@ function initEchartsAdmMap(geoJson, name, chart, alladcode, show_label=true, bor
         },
         series: [{
             type: 'map',
+            projection: {
+                project: (point) => getGeoProj(name)(point),
+                unproject: (point) => getGeoProj(name).invert(point)
+            },
             name: '●',
             map: name,
             geoIndex: 0,
@@ -994,6 +1019,10 @@ function initEchartsAdmMap(geoJson, name, chart, alladcode, show_label=true, bor
             z: 3
         }, {
             type: 'map',
+            projection: {
+                project: (point) => getGeoProj(name)(point),
+                unproject: (point) => getGeoProj(name).invert(point)
+            },
             name: '○',
             map: name,
             geoIndex: 0,
